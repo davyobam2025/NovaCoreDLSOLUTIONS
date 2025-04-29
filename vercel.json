@@ -1,22 +1,21 @@
 {
-    "crons": [
-      {
-        "path": "/api/monitor/log-status",
-        "schedule": "@hourly"
-      }
-    ],
-    "functions": {
-      "api/monitor/log-status/route.ts": {
-        "memory": 512,
-        "maxDuration": 10
-      }
-    },
-    "rewrites": [],
-    "redirects": [],
-    "headers": [],
-    "images": {
-      "domains": [],
-      "formats": ["image/webp"]
+  "crons": [
+    {
+      "path": "/api/monitor/log-status",
+      "schedule": "@hourly"
     }
+  ],
+  "functions": {
+    "api/monitor/log-status/route.ts": {
+      "memory": 512,
+      "maxDuration": 10
+    }
+  },
+  "rewrites": [],
+  "redirects": [],
+  "headers": [],
+  "images": {
+    "domains": [],
+    "formats": ["image/webp"]
   }
-  
+}

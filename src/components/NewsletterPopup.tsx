@@ -1,55 +1,86 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { db } from "@/lib/firebaseClient";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import toast from "react-hot-toast";
 
 export default function NewsletterPopup() {
   const [isVisible, setIsVisible] = useState(false);
+  const [email, setEmail] = useState('');
 
   useEffect(() => {
-    const timer = setTimeout(() => setIsVisible(true), 60000); // Après 60s
+    const timer = setTimeout(() => {
+      setIsVisible(true);
+    }, 1500); // délai de 1.5 sec pour laisser Navbar charger
+
     return () => clearTimeout(timer);
   }, []);
+
+  const closePopup = () => {
+    setIsVisible(false);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+
+    try {
+      await addDoc(collection(db, "newsletter"), {
+        email,
+        createdAt: serverTimestamp(),
+      });
+      toast.success("Merci pour votre inscription !");
+      setEmail('');
+      closePopup();
+    } catch (error) {
+      console.error("Erreur d'inscription newsletter:", error);
+      toast.error("Erreur, veuillez réessayer.");
+    }
+  };
 
   if (!isVisible) return null;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, backdropFilter: 'blur(0px)' }}
-      animate={{ opacity: 1, backdropFilter: 'blur(8px)' }}
-      className="fixed inset-0 flex items-center justify-center bg-black/50 z-50"
-    >
-      <motion.div
-        initial={{ scale: 0.7 }}
-        animate={{ scale: 1 }}
-        transition={{ type: 'spring', stiffness: 260 }}
-        className="bg-white/10 backdrop-blur-lg p-8 rounded-2xl border border-white/20 w-full max-w-md mx-4 text-white space-y-6 relative"
+    <div className="fixed top-24 left-1/2 transform -translate-x-1/2 bg-white dark:bg-gray-900 p-8 rounded-2xl shadow-2xl z-50 w-[90%] max-w-md text-center">
+      <button
+        onClick={closePopup}
+        className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
+        aria-label="Fermer"
       >
-        <button
-          onClick={() => setIsVisible(false)}
-          className="absolute top-4 right-4 hover:text-red-500 transition"
-        >
-          ✖️
-        </button>
-        <h2 className="text-3xl font-bold text-center">💌 Rejoignez la Révolution NovaCore</h2>
-        <p className="text-center opacity-80">
+        ❌
+      </button>
+
+      <motion.div
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ duration: 0.4 }}
+      >
+        <h2 className="text-2xl font-bold mb-4 text-indigo-700">
+          📩 Rejoignez la Révolution NovaCore
+        </h2>
+        <p className="text-gray-600 dark:text-gray-300 mb-6">
           Recevez nos actualités exclusives et avant-premières IA 🚀
         </p>
-        <form className="flex flex-col gap-4">
+
+        <form onSubmit={handleSubmit} className="space-y-4">
           <input
             type="email"
             placeholder="Votre email"
-            className="w-full px-4 py-3 rounded-full bg-white/20 text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-primary"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full px-4 py-3 rounded-full border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-gray-700"
             required
           />
           <button
             type="submit"
-            className="w-full bg-primary hover:bg-indigo-600 transition font-bold py-3 rounded-full"
+            className="w-full bg-indigo-600 text-white py-3 rounded-full font-bold hover:bg-indigo-700 transition"
           >
             M'inscrire
           </button>
         </form>
       </motion.div>
-    </motion.div>
+    </div>
   );
 }

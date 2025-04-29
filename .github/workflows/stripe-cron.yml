@@ -1,0 +1,14 @@
+name: Stripe Cron Premium Sync
+
+on:
+  schedule:
+    - cron: '0 * * * *' # Toutes les heures (UTC)
+  workflow_dispatch:
+
+jobs:
+  sync-premium-status:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Appeler endpoint de sync NovaCore
+        run: |
+          curl -X GET https://tonsite.com/api/stripe/cron

@@ -1,6 +1,14 @@
+import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
 import React from "react";
 
 export default function CRMPage() {
+  const { userId } = auth();
+
+  if (!userId) {
+    redirect("/sign-in"); // Redirige vers page connexion Clerk
+  }
+
   return (
     <main className="min-h-screen bg-gray-50 py-20 px-4 md:px-20">
       <section className="text-center mb-12">

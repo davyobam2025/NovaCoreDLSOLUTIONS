@@ -1,64 +1,88 @@
-"use client";
+'use client'
 
-import Link from "next/link";
-import Image from "next/image";
+import { useEffect, useState } from 'react'
+import { createClient } from '@supabase/supabase-js'
+import { Calendar, momentLocalizer } from 'react-big-calendar'
+import moment from 'moment'
+import 'react-big-calendar/lib/css/react-big-calendar.css'
 
-export default function HotelReservationsPage() {
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
+
+const localizer = momentLocalizer(moment)
+
+export default function ReservationCalendarPage() {
+  const [reservations, setReservations] = useState([])
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const { data } = await supabase.from('hotel_reservations').select('*, client:client_id(nom)')
+      if (data) {
+        const events = data.map((r) => ({
+          id: r.id,
+          title: `${r.client?.nom} – ${r.chambre}`,
+          start: new Date(r.date_debut),
+          end: new Date(r.date_fin),
+          resource: r
+        }))
+        setReservations(events)
+      }
+    }
+
+    fetchData()
+  }, [])
+
+  const handleSelectSlot = async ({ start, end }) => {
+    const nomClient = prompt('Nom du client ?')
+    const chambre = prompt('Chambre ? (ex: 203)')
+
+    if (!nomClient || !chambre) return
+
+    // Créer ou trouver client
+    const { data: existing } = await supabase
+      .from('hotel_clients')
+      .select('id')
+      .eq('nom', nomClient)
+      .single()
+
+    const clientId = existing?.id || (
+      await supabase.from('hotel_clients').insert([{ nom: nomClient }]).select('id').single()
+    ).data?.id
+
+    const { data } = await supabase.from('hotel_reservations').insert([{
+      client_id: clientId,
+      date_debut: start,
+      date_fin: end,
+      chambre
+    }]).select().single()
+
+    if (data) {
+      setReservations([...reservations, {
+        id: data.id,
+        title: `${nomClient} – ${chambre}`,
+        start: new Date(data.date_debut),
+        end: new Date(data.date_fin),
+        resource: data
+      }])
+    }
+  }
+
   return (
-    <main className="relative min-h-screen px-6 py-20 text-white">
-      {/* 🎥 Fond animé */}
-      <video
-        className="absolute inset-0 w-full h-full object-cover z-0"
-        autoPlay
-        loop
-        muted
-        playsInline
-      >
-        <source
-          src="https://res.cloudinary.com/dko5sommz/video/upload/v1744416232/background_abzanh.mp4"
-          type="video/mp4"
-        />
-      </video>
-
-      {/* Overlay sombre */}
-      <div className="absolute inset-0 bg-black/70 z-10" />
-
-      {/* Contenu principal */}
-      <div className="relative z-20 max-w-6xl mx-auto">
-        <div className="flex items-center justify-between mb-10">
-          <h1 className="text-3xl font-bold drop-shadow">📅 Réservations Hôtelières</h1>
-          <Link
-            href="#"
-            className="bg-white text-black font-semibold py-2 px-4 rounded hover:bg-gray-200 transition shadow"
-          >
-            ➕ Ajouter une réservation
-          </Link>
-        </div>
-
-        {/* Zone réservations */}
-        <div className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-xl p-6 shadow-xl">
-          <p className="text-gray-200 text-center">
-            Aucune réservation enregistrée pour le moment.<br />
-            Cliquez sur “Ajouter une réservation” pour commencer.
-          </p>
-        </div>
-      </div>
-
-      {/* Footer */}
-      <footer className="relative z-20 mt-20 w-full max-w-4xl mx-auto text-center text-sm text-white opacity-80">
-        <div className="flex flex-col items-center gap-3">
-          <Image
-            src="https://res.cloudinary.com/dko5sommz/image/upload/v1743895989/1_f3thi3.png"
-            alt="Logo DL Solutions"
-            width={70}
-            height={70}
-            className="rounded-full"
-          />
-          <p>© Dave & Luce Solutions — <strong>Samuel OBAM made this</strong></p>
-          <p>📞 +237 694 34 15 86 — +237 620 21 62 17</p>
-          <p>📧 samuelobaml@dlsolutions.com</p>
-        </div>
-      </footer>
-    </main>
-  );
+    <div className="min-h-screen bg-white px-6 py-10 max-w-6xl mx-auto">
+      <h1 className="text-2xl font-bold text-indigo-700 mb-6">📅 Réservations Hôtelières</h1>
+      <Calendar
+        localizer={localizer}
+        events={reservations}
+        startAccessor="start"
+        endAccessor="end"
+        selectable
+        onSelectSlot={handleSelectSlot}
+        style={{ height: 600 }}
+        popup
+        views={['month', 'week', 'day']}
+      />
+    </div>
+  )
 }

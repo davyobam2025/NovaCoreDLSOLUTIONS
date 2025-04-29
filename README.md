@@ -1,38 +1,36 @@
 # 🚀 DL Solutions + NovaCore - Site Web Officiel
 
-Bienvenue sur le projet **DL Solutions** et **NovaCore**, construit avec **Next.js 15**, **TailwindCSS**, **Framer Motion** et **React Icons**.
+Bienvenue sur **DL Solutions** et **NovaCore**, plateforme CRM, ERP, IA développée en **Next.js 15**, **TailwindCSS**, **Framer Motion**.
 
 ## 🔥 Fonctionnalités principales
-- Header et Footer responsive ultra premium
-- Hero Section moderne et impactante
-- Services clairs et animés
-- Actualités stylées
-- Section Avis clients + Formulaire Suggestion
-- Popup Réservation automatique
-- Chatbot IA discret
-- Assistant Vocal IA DaVY intégré (Speech Recognition)
-- Support du Dark/Light Mode
-- 100% Mobile First Design
+- Connexion / Inscription sécurisé (Clerk)
+- CRM + ERP NovaCore ultra personnalisable
+- Newsletter connectée Firestore
+- Formulaire Contact Firestore
+- Admin Panel Projets 🔐
+- Webhooks Stripe
+- Assistant IA Chatbot intégré
+- Voice Assistant NovaCore
+- Design Responsive 100% Mobile First
+- Performances Lighthouse 95-100%
 
 ## 📂 Structure du projet
 ```bash
 /src
   /app
+    /home/page.tsx
     /services/page.tsx
     /projects/page.tsx
     /contact/page.tsx
-    /about/page.tsx
-    /novacore/page.tsx
-    /realisations/page.tsx
-    /blog/page.tsx
+    /admin/projets/page.tsx
   /components
     Header.tsx
     Footer.tsx
-    NewsSection.tsx
-    ReviewsSection.tsx
     Chatbot.tsx
     ReservationPopup.tsx
     VoiceAssistant.tsx
     ThemeToggle.tsx
-/public/icons
-  # Logos, badges, QR code
+/firebase
+  firebaseConfig.ts
+/public
+  /icons

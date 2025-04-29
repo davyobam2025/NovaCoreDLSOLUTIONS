@@ -7,17 +7,17 @@ import { FaChartLine, FaGraduationCap, FaRobot, FaLaptopCode, FaHandshake, FaGlo
 import Link from 'next/link';
 
 const services = [
-  { title: "Optimisation de l'Expérience Client (CX)", description: "Diagnostic, cartographie parcours client, traitement réclamations, fidélisation premium.", icon: <FaChartLine size={40} /> },
-  { title: "Formations Service Client, Vente & CRM", description: "Formation accueil haut de gamme, gestion clients difficiles, CRM simple et intuitif.", icon: <FaGraduationCap size={40} /> },
-  { title: "Création CRM & Applications Web Sur-Mesure", description: "Développement CRM sur mesure, portails clients, outils digitaux professionnels.", icon: <FaLaptopCode size={40} /> },
-  { title: "Automatisation de Processus & IA (NovaCore Tools)", description: "IA pour automatisation commerciale, réponses automatisées, gestion données avancée.", icon: <FaRobot size={40} /> },
-  { title: "Coaching Stratégique & KPIs", description: "Accompagnement mensuel, analyse KPIs, réajustement rapide des stratégies commerciales.", icon: <FaHandshake size={40} /> },
-  { title: "Communication Digitale & Pack Com 360°", description: "Création visuels optimisés, gestion réseaux sociaux, branding, QR code sur mesure.", icon: <FaGlobe size={40} /> },
-  { title: "Création de Calendrier Editorial Premium", description: "12 à 20 visuels/mois optimisés IA pour réseaux sociaux, planification stratégique.", icon: <FaRegCalendarAlt size={40} /> },
-  { title: "Contenus IA & Publication Automatisée", description: "Contenus générés par IA, automatisation de la publication multi-plateformes.", icon: <FaRocket size={40} /> },
-  { title: "Audit de Présence en Ligne", description: "Audit SEO, audit réseaux sociaux, analyse de visibilité digitale professionnelle.", icon: <FaLightbulb size={40} /> },
-  { title: "Déploiement CRM Avancé + Dashboard KPIs", description: "CRM complet avec tableau de bord KPI personnalisé et automatisations métiers.", icon: <FaUserTie size={40} /> },
-  { title: "Accompagnement Premium 3 Mois", description: "Suivi intensif : Optimisation CX, CRM, digitalisation avancée, coaching rapproché.", icon: <FaMobileAlt size={40} /> },
+  { title: "Optimisation CX", description: "Diagnostic, parcours client, réclamations, fidélisation.", icon: <FaChartLine size={40} /> },
+  { title: "Formations CRM & Vente", description: "Service client premium, CRM ultra-intuitif, télé-opération.", icon: <FaGraduationCap size={40} /> },
+  { title: "Création CRM Web/App", description: "Développement CRM/Portails clients modernes sur mesure.", icon: <FaLaptopCode size={40} /> },
+  { title: "Automatisation IA NovaCore", description: "IA pour ventes, support, data science, scoring prédictif.", icon: <FaRobot size={40} /> },
+  { title: "Coaching KPIs & Stratégie", description: "KPIs, dashboard pilotage, stratégie commerciale gagnante.", icon: <FaHandshake size={40} /> },
+  { title: "Communication Digitale", description: "Pack visuels réseaux, SEO social, branding QR Code IA.", icon: <FaGlobe size={40} /> },
+  { title: "Calendrier Editorial IA", description: "Contenus mensuels automatisés premium pour vos réseaux.", icon: <FaRegCalendarAlt size={40} /> },
+  { title: "Content & Publication Auto", description: "Création de posts IA + auto-publieur multi-plateforme.", icon: <FaRocket size={40} /> },
+  { title: "Audit Digital & SEO", description: "Audit complet SEO, réseaux, réputation digitale pro.", icon: <FaLightbulb size={40} /> },
+  { title: "Déploiement CRM NovaCore", description: "CRM métier, KPI, automatisations stratégiques sur mesure.", icon: <FaUserTie size={40} /> },
+  { title: "Accompagnement Premium 3 Mois", description: "Coaching CX, CRM, digitalisation, IA personnalisé.", icon: <FaMobileAlt size={40} /> },
 ];
 
 export default function ServicesPage() {
@@ -27,63 +27,50 @@ export default function ServicesPage() {
     if (containerRef.current) {
       gsap.from(containerRef.current.children, {
         opacity: 0,
-        y: 50,
+        y: 60,
         stagger: 0.2,
-        duration: 1.2,
+        duration: 1,
         ease: "power3.out",
       });
     }
   }, []);
 
   return (
-    <main className="bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a] min-h-screen pt-20">
-      
-      {/* Header */}
-      <section className="text-center section-padding">
-        <motion.h1
-          initial={{ opacity: 0, y: -50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1 }}
-          className="hero-heading mb-6"
-        >
-          Nos Services
+    <main className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-800 to-pink-700 pt-24">
+      <section className="text-center mb-12 px-6">
+        <motion.h1 initial={{ opacity: 0, y: -50 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1 }} className="text-5xl font-bold text-white mb-6">
+          🚀 Nos Services NovaCore
         </motion.h1>
-        <p className="max-w-xl mx-auto text-gray-400 text-lg">
-          Construisons ensemble votre futur digital et client avec excellence. 🚀
+        <p className="max-w-2xl mx-auto text-gray-300 text-lg">
+          Votre succès digital commence ici.
         </p>
       </section>
 
-      {/* Services Cards - Scrollable Flex */}
-      <section ref={containerRef} className="overflow-x-auto flex gap-8 section-padding pb-12 px-6 snap-x snap-mandatory">
+      <section ref={containerRef} className="flex overflow-x-auto gap-6 px-6 pb-12 snap-x snap-mandatory">
         {services.map((service, idx) => (
-          <div
+          <motion.div
             key={idx}
-            className="min-w-[300px] bg-gray-100 dark:bg-gray-800 rounded-xl shadow-lg p-6 flex-shrink-0 snap-center text-center"
+            whileHover={{ scale: 1.05 }}
+            className="min-w-[280px] bg-white/10 backdrop-blur-lg text-white rounded-xl p-6 shadow-lg flex-shrink-0 snap-center text-center transition-all"
           >
-            <div className="text-primary mb-6">{service.icon}</div>
-            <h3 className="text-2xl font-bold mb-4">{service.title}</h3>
-            <p className="text-gray-600 dark:text-gray-300">{service.description}</p>
-          </div>
+            <div className="mb-4">{service.icon}</div>
+            <h3 className="text-xl font-bold mb-2">{service.title}</h3>
+            <p className="text-gray-300 text-sm">{service.description}</p>
+          </motion.div>
         ))}
       </section>
 
-      {/* CTA Final */}
       <motion.div
-        className="text-center section-padding bg-primary text-white"
+        className="text-center py-10 bg-indigo-700 text-white"
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         transition={{ duration: 1 }}
       >
-        <h2 className="text-4xl font-bold mb-4">Un projet ambitieux ? Discutons-en !</h2>
-        <p className="mb-8">Nous vous aidons à transformer vos processus et votre expérience client avec excellence.</p>
-        <Link
-          href="/contact"
-          className="px-8 py-4 bg-white text-primary font-bold rounded-full shadow-lg hover:shadow-2xl hover:scale-110 transition-all duration-300"
-        >
-          Nous Contacter
+        <h2 className="text-3xl font-bold mb-4">Un projet ambitieux ?</h2>
+        <Link href="/contact" className="inline-block px-6 py-3 mt-4 bg-white text-indigo-700 rounded-full font-bold hover:scale-110 transition">
+          Parlez-nous de votre projet
         </Link>
       </motion.div>
-
     </main>
   );
 }
