@@ -1,64 +1,67 @@
-"use client";
+'use client'
 
-import Link from "next/link";
-import Image from "next/image";
+import { useEffect, useState } from 'react'
+import { createClient } from '@supabase/supabase-js'
+import Link from 'next/link'
 
-export default function HotelClientsPage() {
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
+
+export default function ListeClientsHotel() {
+  const [clients, setClients] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchClients = async () => {
+      const session = await supabase.auth.getSession()
+      const email = session.data.session?.user.email
+
+      const { data: entreprise } = await supabase
+        .from('entreprises')
+        .select('id')
+        .eq('email', email)
+        .maybeSingle()
+
+      const { data } = await supabase
+        .from('clients_hotel')
+        .select('*')
+        .eq('entreprise_id', entreprise?.id)
+        .order('created_at', { ascending: false })
+
+      setClients(data || [])
+      setLoading(false)
+    }
+
+    fetchClients()
+  }, [])
+
   return (
-    <main className="relative min-h-screen px-6 py-20 text-white">
-      {/* 🎥 Vidéo de fond */}
-      <video
-        className="absolute inset-0 w-full h-full object-cover z-0"
-        autoPlay
-        loop
-        muted
-        playsInline
-      >
-        <source
-          src="https://res.cloudinary.com/dko5sommz/video/upload/v1744416232/background_abzanh.mp4"
-          type="video/mp4"
-        />
-      </video>
+    <div className="max-w-5xl mx-auto py-10 px-6">
+      <h1 className="text-2xl font-bold text-indigo-600 mb-4">👥 Clients enregistrés</h1>
 
-      {/* 🖤 Overlay sombre */}
-      <div className="absolute inset-0 bg-black/70 z-10" />
-
-      {/* Contenu */}
-      <div className="relative z-20 max-w-6xl mx-auto">
-        <div className="flex items-center justify-between mb-10">
-          <h1 className="text-3xl font-bold drop-shadow">🧍‍♂️ Clients Hôtellerie</h1>
-          <Link
-            href="#"
-            className="bg-white text-black font-semibold py-2 px-4 rounded hover:bg-gray-200 transition shadow"
-          >
-            ➕ Ajouter un client
-          </Link>
-        </div>
-
-        {/* Liste des clients ou placeholder */}
-        <div className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-xl p-6 shadow-xl">
-          <p className="text-gray-200 text-center">
-            Aucun client enregistré pour l’instant.<br />
-            Cliquez sur “Ajouter un client” pour démarrer.
-          </p>
-        </div>
-      </div>
-
-      {/* Footer officiel */}
-      <footer className="relative z-20 mt-20 w-full max-w-4xl mx-auto text-center text-sm text-white opacity-80">
-        <div className="flex flex-col items-center gap-3">
-          <Image
-            src="https://res.cloudinary.com/dko5sommz/image/upload/v1743895989/1_f3thi3.png"
-            alt="Logo DL Solutions"
-            width={70}
-            height={70}
-            className="rounded-full"
-          />
-          <p>© Dave & Luce Solutions — <strong>Samuel OBAM made this</strong></p>
-          <p>📞 +237 694 34 15 86 — +237 620 21 62 17</p>
-          <p>📧 samuelobaml@dlsolutions.com</p>
-        </div>
-      </footer>
-    </main>
-  );
+      {loading ? (
+        <p>Chargement...</p>
+      ) : clients.length === 0 ? (
+        <p>Aucun client pour l’instant.</p>
+      ) : (
+        <ul className="space-y-4">
+          {clients.map((c) => (
+            <li key={c.id} className="border p-4 rounded bg-white shadow flex justify-between items-center">
+              <div>
+                <p className="font-semibold">{c.prenom} {c.nom}</p>
+                <p className="text-sm text-gray-600">{c.email} • {c.telephone}</p>
+              </div>
+              <Link href={`/crm/hotel/clients/${c.id}`}>
+                <button className="bg-indigo-600 text-white px-4 py-1 rounded hover:bg-indigo-700">
+                  ➡️ Voir fiche
+                </button>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  )
 }

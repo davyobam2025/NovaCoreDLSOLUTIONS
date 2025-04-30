@@ -1,67 +1,46 @@
-"use client";
+'use client'
 
-import Link from "next/link";
-import Image from "next/image";
-import { BedDouble } from "lucide-react"; // Icône haut de gamme
+import ChambreForm from '../../components/ChambreForm'
+import { useEffect, useState } from 'react'
+import { createClient } from '@supabase/supabase-js'
 
-export default function HotelRoomsPage() {
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
+
+export default function PageChambres() {
+  const [chambres, setChambres] = useState<any[]>([])
+
+  const loadChambres = async () => {
+    const { data } = await supabase
+      .from('chambres')
+      .select('*')
+      .order('numero')
+
+    setChambres(data || [])
+  }
+
+  useEffect(() => {
+    loadChambres()
+  }, [])
+
   return (
-    <main className="relative min-h-screen px-6 py-20 text-white">
-      {/* 🎥 Vidéo de fond */}
-      <video
-        className="absolute inset-0 w-full h-full object-cover z-0"
-        autoPlay
-        loop
-        muted
-        playsInline
-      >
-        <source
-          src="https://res.cloudinary.com/dko5sommz/video/upload/v1744416232/background_abzanh.mp4"
-          type="video/mp4"
-        />
-      </video>
+    <div className="max-w-5xl mx-auto p-6">
+      <h1 className="text-2xl font-bold mb-4 text-pink-700">🛏️ Gestion des Chambres</h1>
 
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-black/70 z-10" />
+      <ChambreForm onSuccess={loadChambres} />
 
-      {/* Contenu principal */}
-      <div className="relative z-20 max-w-6xl mx-auto">
-        <div className="flex items-center justify-between mb-10">
-          <h1 className="text-3xl font-bold drop-shadow flex items-center gap-2">
-            <BedDouble className="w-8 h-8 text-indigo-300" /> Chambres de l'Hôtel
-          </h1>
-          <Link
-            href="#"
-            className="bg-white text-black font-semibold py-2 px-4 rounded hover:bg-gray-200 transition shadow"
-          >
-            ➕ Ajouter une chambre
-          </Link>
-        </div>
-
-        {/* Zone de contenu */}
-        <div className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-xl p-6 shadow-xl">
-          <p className="text-gray-200 text-center">
-            Aucune chambre n’est encore enregistrée.<br />
-            Cliquez sur “Ajouter une chambre” pour commencer.
-          </p>
-        </div>
+      <div className="mt-6 grid gap-4">
+        {chambres.map((c) => (
+          <div key={c.id} className="p-4 border rounded bg-white shadow">
+            <p><strong>Numéro :</strong> {c.numero}</p>
+            <p><strong>Type :</strong> {c.type}</p>
+            <p><strong>Vue :</strong> {c.vue}</p>
+            <p><strong>Statut :</strong> {c.statut}</p>
+          </div>
+        ))}
       </div>
-
-      {/* Footer signature */}
-      <footer className="relative z-20 mt-20 w-full max-w-4xl mx-auto text-center text-sm text-white opacity-80">
-        <div className="flex flex-col items-center gap-3">
-          <Image
-            src="https://res.cloudinary.com/dko5sommz/image/upload/v1743895989/1_f3thi3.png"
-            alt="Logo DL Solutions"
-            width={70}
-            height={70}
-            className="rounded-full"
-          />
-          <p>© Dave & Luce Solutions — <strong>Samuel OBAM made this</strong></p>
-          <p>📞 +237 694 34 15 86 — +237 620 21 62 17</p>
-          <p>📧 samuelobaml@dlsolutions.com</p>
-        </div>
-      </footer>
-    </main>
-  );
+    </div>
+  )
 }

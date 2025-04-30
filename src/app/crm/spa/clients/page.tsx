@@ -1,37 +1,67 @@
-"use client";
+'use client'
 
-import Link from "next/link";
-import Image from "next/image";
-import { Users } from "lucide-react";
+import { useEffect, useState } from 'react'
+import Link from 'next/link'
+import { createClient } from '@supabase/supabase-js'
 
-export default function SpaClientsPage() {
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
+
+export default function ListeClientsSpa() {
+  const [clients, setClients] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchClients = async () => {
+      const session = await supabase.auth.getSession()
+      const email = session.data.session?.user.email
+
+      const { data: entreprise } = await supabase
+        .from('entreprises')
+        .select('id')
+        .eq('email', email)
+        .maybeSingle()
+
+      const { data } = await supabase
+        .from('clients_spa')
+        .select('*')
+        .eq('entreprise_id', entreprise?.id)
+        .order('created_at', { ascending: false })
+
+      setClients(data || [])
+      setLoading(false)
+    }
+
+    fetchClients()
+  }, [])
+
   return (
-    <main className="relative min-h-screen px-6 py-20 text-white">
-      <video className="absolute inset-0 w-full h-full object-cover z-0" autoPlay loop muted playsInline>
-        <source src="https://res.cloudinary.com/dko5sommz/video/upload/v1744416232/background_abzanh.mp4" type="video/mp4" />
-      </video>
-      <div className="absolute inset-0 bg-black/70 z-10" />
-      <div className="relative z-20 max-w-6xl mx-auto">
-        <div className="flex items-center justify-between mb-10">
-          <h1 className="text-3xl font-bold drop-shadow flex items-center gap-2">
-            <Users className="w-8 h-8 text-purple-300" /> Clients Spa
-          </h1>
-          <Link href="#" className="bg-white text-black font-semibold py-2 px-4 rounded hover:bg-gray-200 transition shadow">
-            ➕ Ajouter un client
-          </Link>
-        </div>
-        <div className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-xl p-6 shadow-xl text-center text-gray-200">
-          Aucun client enregistré.
-        </div>
-      </div>
-      <footer className="relative z-20 mt-20 w-full max-w-4xl mx-auto text-center text-sm text-white opacity-80">
-        <div className="flex flex-col items-center gap-3">
-          <Image src="https://res.cloudinary.com/dko5sommz/image/upload/v1743895989/1_f3thi3.png" alt="Logo DL Solutions" width={70} height={70} className="rounded-full" />
-          <p>© Dave & Luce Solutions — <strong>Samuel OBAM made this</strong></p>
-          <p>📞 +237 694 34 15 86 — +237 620 21 62 17</p>
-          <p>📧 samuelobaml@dlsolutions.com</p>
-        </div>
-      </footer>
-    </main>
-  );
+    <div className="max-w-6xl mx-auto py-10 px-6">
+      <h1 className="text-2xl font-bold text-pink-600 mb-6">👥 Liste des clients Spa</h1>
+
+      {loading ? (
+        <p>Chargement en cours...</p>
+      ) : clients.length === 0 ? (
+        <p>Aucun client enregistré.</p>
+      ) : (
+        <ul className="space-y-4">
+          {clients.map((client) => (
+            <li key={client.id} className="bg-white shadow p-4 rounded flex justify-between items-center">
+              <div>
+                <p className="font-semibold">{client.prenom} {client.nom}</p>
+                <p className="text-sm text-gray-600">{client.email} • {client.telephone}</p>
+              </div>
+              <Link href={`/crm/spa/clients/${client.id}`}>
+                <button className="bg-pink-600 text-white px-4 py-1 rounded hover:bg-pink-700">
+                  ➡️ Voir fiche
+                </button>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  )
 }
